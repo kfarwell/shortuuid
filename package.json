@@ -1,9 +1,9 @@
 {
-  "name": "shortuuid",
-  "version": "0.1.0",
+  "name": "@kfarwell/shortuuid",
+  "version": "1.0.0",
   "description": "A generator library for concise, unambiguous and URL-safe UUIDs",
-  "repository": "trekjs/shortuuid",
-  "author": "Fangdun Cai <cfddream@gmail.com>",
+  "repository": "kfarwell/shortuuid",
+  "author": "Kyle Farwell <m@kfarwell.org>",
   "license": "MIT",
   "main": "index.js",
   "engines": {
