@@ -1,13 +1,13 @@
 {
   "name": "@kfarwell/shortuuid",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A generator library for concise, unambiguous and URL-safe UUIDs",
   "repository": "kfarwell/shortuuid",
   "author": "Kyle Farwell <m@kfarwell.org>",
   "license": "MIT",
   "main": "index.js",
   "engines": {
-    "node": ">= 4"
+    "node": ">= 16"
   },
   "scripts": {
     "test": "mocha --bail --check-leaks test",
@@ -15,8 +15,7 @@
     "test-travis": "nyc --reporter=lcovonly mocha --bail --check-leaks test"
   },
   "dependencies": {
-    "bignumber.js": "2.3.0",
-    "uuid-1345": "^0.99.6"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "mocha": "^11.1.0",

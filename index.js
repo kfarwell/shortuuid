@@ -1,8 +1,7 @@
 'use strict'
 
-const BigNumber = require('bignumber.js')
 const crypto = require('crypto')
-const uuid = require('uuid-1345')
+const { v4, v5 } = require('uuid')
 
 const ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
@@ -21,24 +20,25 @@ module.exports = class ShortUUID {
    * @api private
    */
   _numToString(number, padToLen) {
-    number = number || 0
+    number = BigInt(number || 0)
     padToLen = padToLen || 0
-    number = new BigNumber(number)
+
     let output = ''
-    let digit
-    while (number.toNumber()) {
-      digit = number.mod(this.length)
-      number = number.dividedToIntegerBy(this.length)
+    while (number > 0n) {
+      const digit = number % BigInt(this.length)
+      number = number / BigInt(this.length)
       output = this.legacy
-        ? output + this.alphabet[digit.toNumber()]
-        : this.alphabet[digit.toNumber()] + output
+        ? output + this.alphabet[Number(digit)]
+        : this.alphabet[Number(digit)] + output
     }
+
     if (padToLen) {
-      let remainder = Math.max(padToLen - output.length, 0)
+      const remainder = Math.max(padToLen - output.length, 0)
       output = this.legacy
         ? output + this.alphabet[0].repeat(remainder)
         : this.alphabet[0].repeat(remainder) + output
     }
+
     return output
   }
 
@@ -54,8 +54,7 @@ module.exports = class ShortUUID {
     str = str || ''
     padToLen = padToLen || 22
     let newstr = str.replace(/\-/g, '')
-    let number = new BigNumber(newstr, 16)
-    return this._numToString(number.toString(), padToLen)
+    return this._numToString(BigInt(`0x${newstr}`), padToLen)
   }
 
   /**
@@ -64,13 +63,13 @@ module.exports = class ShortUUID {
    * @api private
    */
   _stringToNum(str) {
-    let number = new BigNumber(0)
+    let number = 0n
     let arr = str.split('')
     if (this.legacy) {
       arr = arr.reverse()
     }
     arr.forEach(char => {
-      number = number.times(this.length).plus(this.alphabet.indexOf(char))
+      number = number * BigInt(this.length) + BigInt(this.alphabet.indexOf(char))
     })
     return number.toString(16)
   }
@@ -100,9 +99,8 @@ module.exports = class ShortUUID {
    */
   encodedLength(numBytes) {
     numBytes = numBytes || 16
-    const factor = new BigNumber(String(Math.log(256) / Math.log(this.length)))
-    const length = Math.ceil(factor.times(numBytes).toString())
-    return length
+    const factor = Math.log(256) / Math.log(this.length)
+    return Math.ceil(factor * numBytes)
   }
 
   /**
@@ -116,17 +114,11 @@ module.exports = class ShortUUID {
     padToLen = padToLen || 22
     let id
     if (name === '') {
-      id = uuid.v4()
+      id = v4()
     } else if (name.toLowerCase().startsWith('http')) {
-      id = uuid.v5({
-        namespace: uuid.namespace.url,
-        name: name
-      })
+      id = v5(name, v5.URL)
     } else {
-      id = uuid.v5({
-        namespace: uuid.namespace.dns,
-        name: name
-      })
+      id = v5(name, v5.DNS)
     }
     return this.encode(id, padToLen)
   }
@@ -138,8 +130,8 @@ module.exports = class ShortUUID {
   random(len) {
     len = len || 22
     const randomStr = crypto.randomBytes(20).toString('hex')
-    const num = new BigNumber(randomStr, 16)
-    return this._numToString(num.toString(), len).substring(0, len)
+    const num = BigInt(`0x${randomStr}`)
+    return this._numToString(num, len).substring(0, len)
   }
 
 }
