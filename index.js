@@ -8,10 +8,11 @@ const ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 
 module.exports = class ShortUUID {
 
-  constructor(alphabet) {
+  constructor(alphabet, legacyMode = false) {
     alphabet = alphabet || ALPHABET
     this.alphabet = alphabet
     this.length = alphabet.length
+    this.legacy = legacyMode
   }
 
   /**
@@ -28,11 +29,15 @@ module.exports = class ShortUUID {
     while (number.toNumber()) {
       digit = number.mod(this.length)
       number = number.dividedToIntegerBy(this.length)
-      output += this.alphabet[digit.toNumber()]
+      output = this.legacy
+        ? output + this.alphabet[digit.toNumber()]
+        : this.alphabet[digit.toNumber()] + output
     }
     if (padToLen) {
       let remainder = Math.max(padToLen - output.length, 0)
-      output += this.alphabet[0].repeat(remainder)
+      output = this.legacy
+        ? output + this.alphabet[0].repeat(remainder)
+        : this.alphabet[0].repeat(remainder) + output
     }
     return output
   }
@@ -60,7 +65,10 @@ module.exports = class ShortUUID {
    */
   _stringToNum(str) {
     let number = new BigNumber(0)
-    let arr = str.split('').reverse()
+    let arr = str.split('')
+    if (this.legacy) {
+      arr = arr.reverse()
+    }
     arr.forEach(char => {
       number = number.times(this.length).plus(this.alphabet.indexOf(char))
     })
