@@ -16,11 +16,11 @@ describe('ShortUUID#uuid()', () => {
   })
 
   it('should generate with uuid v5 and dns namespace', () => {
-    assert.ok(su.uuid('example.com') === 'wpsWLdLt9nscn2jbTD3uxe')
+    assert.ok(su.uuid('example.com') === 'exu3DTbj2ncsn9tLdLWspw')
   })
 
   it('should generate with uuid v5 and url namespace', () => {
-    assert.ok(su.uuid('http://example.com') === 'c8sh5y9hdSMS6zVnrvf53T')
+    assert.ok(su.uuid('http://example.com') === 'T35fvrnVz6SMSdh9y5hs8c')
   })
 
 })
